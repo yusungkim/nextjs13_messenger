@@ -1,0 +1,42 @@
+services:
+  app:
+    platform: linux/amd64 # for M1 chip
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: nextjs13-messenger
+    tty: true
+    volumes:
+      - .:/usr/src/app
+      - ./node_modules:/usr/src/app/node_modules
+    ports:
+      - 3000:3000
+    networks:
+      - nextjs13-messenger
+
+  # mysql:
+  #   image: 'mysql:8.0'
+  #   command: '--default-authentication-plugin=mysql_native_password'
+  #   ports:
+  #     - '${FORWARD_DB_PORT:-3306}:3306'
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: '${DB_PASSWORD:-docker}'
+  #     MYSQL_ROOT_HOST: "%"
+  #     MYSQL_DATABASE: '${DB_DATABASE:-dev}'
+  #     MYSQL_USER: '${DB_USERNAME:-docker}'
+  #     MYSQL_PASSWORD: '${DB_PASSWORD:-docker}'
+  #     MYSQL_ALLOW_EMPTY_PASSWORD: 1
+  #   volumes:
+  #     - 'mysqldb:/var/lib/mysql'
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD:-docker}"]
+  #     retries: 3
+  #     timeout: 5s
+  #   networks:
+  #     - nextjs13-messenger
+
+networks:
+  nextjs13-messenger:
+
+# volumes:
+#   mysqldb:
