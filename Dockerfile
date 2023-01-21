@@ -12,7 +12,7 @@ RUN adduser ${USER_NAME} && \
 USER ${USER_NAME}
 
 COPY package.json .
-# COPY yarn.lock .
+COPY yarn.lock .
 RUN yarn
 
 COPY . .
