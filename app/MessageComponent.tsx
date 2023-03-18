@@ -1,28 +1,43 @@
 import { Message } from "@lib/type"
 import Image from "next/image"
+import { cls } from "lib/client/utils"
 
 interface Props {
   message: Message
 }
 
 function MessageComponent({ message }: Props) {
-  return (
-    <div className="flex gap-x-2 items-start justify-start px-4 py-1">
+  const isUser = true
 
-      <div className="rounded-full overflow-hidden bg-slate-100 aspect-square w-14 h-14 flex justify-center items-center">
+  return (
+    <div className={cls(
+      "flex w-fit gap-x-2 items-start justify-start px-4 py-1",
+      isUser ? "ml-auto" : ""
+    )}>
+
+      <div className={cls(
+        "flex-shrink-0 rounded-full mx-2 bg-slate-100",
+        isUser ? "order-2" : ""
+      )}>
         <Image
-          height={50}
-          width={50}
+          height={55}
+          width={55}
           src={message.profilePic}
           alt="Profile picture"
         />
       </div>
 
       <div className="">
-        <p className="text-xs text-pink-400">{message.username}</p>
+        <p className={cls(
+          "text-xs",
+          isUser ? "text-blue-400 text-right" : "text-pink-400 text-left"
+        )}>{message.username}</p>
         <div className="flex items-end gap-1">
-          <p className="text-lg bg-pink-400/90 text-white px-3 py-1 rounded-md">{message.message}</p>
-          <p>{message.created_at}</p>
+          <p className={cls(
+            "text-lg text-white px-3 py-1 rounded-md",
+            isUser ? "bg-blue-400/90 order-2" : "bg-pink-400/90"
+          )}>{message.message}</p>
+          <p className="text-slate-400 text-xs">{new Date(message.created_at).toLocaleString()}</p>
         </div>
       </div>
 

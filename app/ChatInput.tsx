@@ -1,9 +1,8 @@
 'use client'
 
 import fetcher from '@lib/client/fetchMessages'
-import useMutation from '@lib/client/useMutation'
 import { cfImage } from '@lib/client/utils'
-import { MessageResponse } from 'pages/api/addMessage'
+import { v4 as uuid } from 'uuid'
 import { FormEvent, useState } from 'react'
 import useSWR from 'swr'
 
@@ -20,10 +19,11 @@ function ChatInput() {
 
     // for optimisitc behavior
     const message = input
+    const id = uuid()
     setInput('')
     const dummyMessage = {
-      id: 'undefined-yet',
-      message: message + " <Sending>",
+      id,
+      message: message + " (Sending...)",
       created_at: Date.now(),
       username: 'Yusung Kim',
       profilePic: cfImage("e64b420c-5dfd-4b3b-140f-de2beab75800", "avatar"),
@@ -44,7 +44,7 @@ function ChatInput() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ id, message })
       })
       const addedMessage = await res.json()
       if (addedMessage?.ok && messages) {

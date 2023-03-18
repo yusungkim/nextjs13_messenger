@@ -14,3 +14,7 @@ npx create-next-app@latest -e with-tailwindcss
 # package install
 docker-compose run --rm -it app yarn
 ```
+
+```bash
+yarn add pusher pusher-js
+```
