@@ -46,30 +46,24 @@ function ChatInput() {
         },
         body: JSON.stringify({ message })
       })
-      console.log("res.status", res.status)
       const addedMessage = await res.json()
-      console.log(addedMessage)
       if (addedMessage?.ok && messages) {
-        const newOne = [addedMessage.message, ...messages]
-        console.log("OKOKOK")
+        const newOne = [...messages, addedMessage.message]
         return newOne
       } else {
-        console.log("NG")
         return messages
       }
     }
 
     mutate(
       sendAndGetLatestMessages, {
-      optimisticData: [dummyMessage, ...messages!],
+      optimisticData: [...messages!, dummyMessage],
       rollbackOnError: true
     })
 
     // send message
     // messageSend({ message })
   }
-
-  console.log(messages)
 
   return (
     <form

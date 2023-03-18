@@ -2,16 +2,15 @@
 
 import fetcher from "@lib/client/fetchMessages"
 import useSWR from "swr"
+import MessageComponent from "./MessageComponent"
 
 function MessageList() {
   const { data: messages, error, mutate } = useSWR('/api/getMessages', fetcher)
   console.log("messages: ", messages)
   return (
     <>
-      {messages?.map((msg, idx) => (
-        <div key={idx}>
-          {msg.message}
-        </div>
+      {messages?.map((message, idx) => (
+        <MessageComponent key={idx} message={message} />
       ))}
     </>
   )
