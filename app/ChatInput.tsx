@@ -1,51 +1,24 @@
 'use client'
 
+import useMutation from '@lib/client/useMutation'
+import { MessageResponse } from 'pages/api/addMessage'
 import { FormEvent, useState } from 'react'
-import { v4 as uuid } from 'uuid'
-import { Message } from '@lib/type'
 
 function ChatInput() {
   const [input, setInput] = useState('')
 
-  
+  const [messageSend, { loading, data, error }] = useMutation<MessageResponse>('/api/addMessage')
 
   const sendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log("send button pressed")
 
     if (!input) return
 
-    console.log("sending...")
-
     // for optimisitc behavior
-    const messageToSend = input
+    const message = input
     setInput('')
 
-    const id = uuid()
-    const payload: Message = {
-      id,
-      message: messageToSend,
-      created_at: Date.now(), //client time zone
-      username: 'Yusung Kim',
-      profilePic: ''
-    }
-
-    const uploadMessageToUpstash = async () => {
-      const res = await fetch('/api/addMessage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: payload
-        })
-      })
-  
-      const data = await res.json()
-      console.log("data sent", data)
-    }
-
-    uploadMessageToUpstash()
+    messageSend({ message })
   }
 
   return (
@@ -65,7 +38,7 @@ function ChatInput() {
 
       <button
         type="submit"
-        disabled={!input}
+        disabled={!input || loading}
         className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded
         disabled:opacity-50 disabled:cursor-not-allowed'
       >

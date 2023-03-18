@@ -4,4 +4,10 @@ export type Message = {
   created_at: number
   username: string
   profilePic: string
+  email: string
+}
+
+export type ApiResponse = {
+  ok: boolean
+  [key: string]: any
 }
