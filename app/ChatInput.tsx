@@ -1,15 +1,19 @@
 'use client'
 
+import fetcher from '@lib/client/fetchMessages'
 import useMutation from '@lib/client/useMutation'
+import { cfImage } from '@lib/client/utils'
 import { MessageResponse } from 'pages/api/addMessage'
 import { FormEvent, useState } from 'react'
+import useSWR from 'swr'
 
 function ChatInput() {
   const [input, setInput] = useState('')
 
-  const [messageSend, { loading, data, error }] = useMutation<MessageResponse>('/api/addMessage')
+  // const [messageSend, { loading, data: newMessageRes }] = useMutation<MessageResponse>('/api/addMessage')
+  const { data: messages, error, mutate } = useSWR('/api/getMessages', fetcher)
 
-  const sendMessage = (e: FormEvent<HTMLFormElement>) => {
+  const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!input) return
@@ -17,9 +21,55 @@ function ChatInput() {
     // for optimisitc behavior
     const message = input
     setInput('')
+    const dummyMessage = {
+      id: 'undefined-yet',
+      message: message + " <Sending>",
+      created_at: Date.now(),
+      username: 'Yusung Kim',
+      profilePic: cfImage("e64b420c-5dfd-4b3b-140f-de2beab75800", "avatar"),
+      email: 'yusungkim@me.com'
+    }
+    // mutate((prev) => {
+    //   if (prev) {
+    //     return [
+    //       dummyMessage,
+    //       ...messages!
+    //     ]
+    //   }
+    // }, false)
 
-    messageSend({ message })
+    const sendAndGetLatestMessages = async () => {
+      const res = await fetch('/api/addMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message })
+      })
+      console.log("res.status", res.status)
+      const addedMessage = await res.json()
+      console.log(addedMessage)
+      if (addedMessage?.ok && messages) {
+        const newOne = [addedMessage.message, ...messages]
+        console.log("OKOKOK")
+        return newOne
+      } else {
+        console.log("NG")
+        return messages
+      }
+    }
+
+    mutate(
+      sendAndGetLatestMessages, {
+      optimisticData: [dummyMessage, ...messages!],
+      rollbackOnError: true
+    })
+
+    // send message
+    // messageSend({ message })
   }
+
+  console.log(messages)
 
   return (
     <form
@@ -38,7 +88,7 @@ function ChatInput() {
 
       <button
         type="submit"
-        disabled={!input || loading}
+        disabled={!input}
         className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded
         disabled:opacity-50 disabled:cursor-not-allowed'
       >

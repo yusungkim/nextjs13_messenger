@@ -26,9 +26,13 @@ async function handler(
   }
 
   // push to redis db
-  await redis.hset("message", payload.id, JSON.stringify(payload as Message))
+  setTimeout(async () => {
+    await redis.hset("message", payload.id, JSON.stringify(payload as Message))
+    return res.status(200).json({ ok: true, message: payload })
+  }, 2000)
 
-  res.status(200).json({ ok: true, message: payload })
+  // redis.hset("message", payload.id, JSON.stringify(payload as Message))
+  // res.status(200).json({ ok: true, message: payload })
 }
 
 export default withMethodGuard({ methods: ['POST'], handler })
